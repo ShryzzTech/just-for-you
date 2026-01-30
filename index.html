@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For My Love ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffd1ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Nunito', sans-serif;
+            padding: 20px 0;
+            overflow-x: hidden; 
+        }
+
+        /* Floating Hearts BG */
+        .heart-bg { position: fixed; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .heart { position: absolute; color: rgba(255, 255, 255, 0.5); animation: float 6s linear infinite; }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Main Card Container */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+            margin: auto;
+            
+            /* THIS FIXES THE PROGRESS BAR STICKING OUT */
+            overflow: hidden; 
+        }
+
+        #story-text {
+            font-size: 1.3rem;
+            color: #444;
+            min-height: 60px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        /* POLAROID IMAGE STYLING */
+        .image-container {
+            width: 100%;
+            max-height: 45vh; 
+            height: auto;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: none; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            background-color: #fff; 
+            border: 10px solid #fff; 
+            transform: rotate(-2deg); 
+            transition: transform 0.3s ease;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container img {
+            width: auto; 
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; 
+            border-radius: 4px;
+        }
+
+        /* BUTTONS */
+        .next-btn {
+            background: #ff4b6e;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Fredoka One', cursive;
+            transition: transform 0.2s;
+            margin-top: auto;
+            display: none; 
+            box-shadow: 0 4px 10px rgba(255, 75, 110, 0.3);
+        }
+        .next-btn:hover { transform: scale(1.05); background: #ff2e56; }
+
+        .proposal-btns {
+            display: none;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .proposal-btns button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn { background: #ff4b6e; color: white; z-index: 20; }
+        #noBtn { background: #e0e0e0; color: #555; position: relative; }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff758c, #ff7eb3);
+            width: 0%;
+            transition: width 0.5s ease;
+            /* Extra safety to ensure it curves with the container */
+            border-radius: 20px 20px 0 0; 
+        }
+
+        /* DATE PICKER & EXTRAS */
+        .date-options {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .date-option {
+            background: #fff0f5;
+            border: 2px solid #ffb7c5;
+            padding: 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #d63384;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .date-option.selected { background: #ff4b6e; color: white; border-color: #ff4b6e; }
+
+        .terms-container {
+            display: none; 
+            margin-top: 15px;
+            background: #ffe6eb;
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px dashed #ff4b6e;
+            animation: pulse 2s infinite;
+        }
+
+        .terms-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #d63384;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        #termsCheckbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #ff4b6e;
+            flex-shrink: 0;
+        }
+
+        .letter-btn {
+            display: none;
+            margin-top: 15px;
+            background: transparent;
+            color: #ff4b6e;
+            border: 2px solid #ff4b6e;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #letter-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .paper {
+            background: #fffdf0;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: #333;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+        
+        .close-letter {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-family: sans-serif; font-size: 1.5rem; cursor: pointer; color: #999;
+        }
+
+        .whatsapp-btn {
+            display: none;
+            margin-top: 20px;
+            background: #25D366;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            font-family: 'Fredoka One';
+            font-size: 1rem;
+        }
+        
+        /* PULSE ANIMATION */
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        
+        /* HEARTBEAT TEXT */
+        .pulse-text { animation: heartbeat 1.5s infinite ease-in-out; }
+        @keyframes heartbeat {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        /* START OVERLAY RESTORED TO ORIGINAL STYLE */
+        #start-overlay h1 {
+            font-family:'Fredoka One';
+            font-size: clamp(2rem, 8vw, 3rem); 
+            margin-bottom: 20px;
+            padding: 0 10px;
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="heart-bg" id="heartBg"></div>
+
+    <div id="start-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; display:flex; justify-content:center; align-items:center; color:white; flex-direction:column; text-align:center;">
+        
+        <h1 class="pulse-text">Hello kuchupuchu ❤️</h1>
+        <p style="font-size: 1.2rem; opacity: 0.9;">(Tap anywhere to start)</p>
+        
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mp3">
+    </audio>
+
+    <div class="container">
+        <div class="progress-bar" id="progressBar"></div>
+        
+        <div class="image-container" id="imageContainer">
+            <img id="storyImage" src="" alt="Our Memory">
+        </div>
+
+        <div id="story-text"></div>
+
+        <div class="date-options" id="dateOptions">
+            <p style="font-size: 1rem; color: #666; margin-bottom: 5px; font-weight: bold;">Select Our Valentine Date:</p>
+            <div class="date-option selected" onclick="selectDate('Expensive Dinner (I\'ll dress up for you 💅)')">Expensive Dinner (I'll dress up for you 💅)</div>
+            <div class="date-option" onclick="selectDate('Shopping Spree (I promise to carry all the bags 🛍️)')">Shopping Spree (I promise to carry all the bags 🛍️)</div>
+            <div class="date-option" onclick="selectDate('Surprise Plan (Whatever makes you happiest) 💸')">Surprise Plan (Whatever makes you happiest) 💸</div>
+        </div>
+
+        <div class="terms-container" id="termsContainer">
+            <label class="terms-label">
+                <input type="checkbox" id="termsCheckbox">
+                I agree to pay for dessert and tell you that you're handsome.
+            </label>
+        </div>
+
+        <button class="next-btn" id="nextBtn">Next >></button>
+
+        <div class="proposal-btns" id="proposalBtns">
+            <button id="yesBtn">YES! 😍</button>
+            <button id="noBtn">No 😢</button>
+        </div>
+
+        <button class="letter-btn" id="openLetterBtn">💌 Read the VIP Note</button>
+        
+        <a href="#" class="whatsapp-btn" id="waBtn" target="_blank">Send My Answer 💘</a>
+    </div>
+
+    <div id="letter-modal">
+        <div class="paper">
+            <div class="close-letter" id="closeLetter">&times;</div>
+                <p>
+                    To my dearest sweetheart, <br><br>
+                     Having you in my life is the real wealth. Thank you for treating me like a king (even when I don’t deserve it). <br><br>
+                    I love when you come over when no one's home, make me laugh in the middle of the road, and just *be there* with me. You make everything better without even trying. <br><br>
+                    Love always,<br>
+                     Your Man ❤️
+                </p>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // ==========================================
+        //  CONFIG: UPDATE YOUR NUMBER HERE!
+        // ==========================================
+        const phoneNumber = "919930039104"; 
+        
+        const story = [
+            {
+                text: "Hey... I wanted to do something a little different for you today.",
+                image: "monkey1.jpeg" 
+            },
+            {
+                text: "Then I got struck by an AMAZING idea...",
+                image: "monkey2.jpeg" 
+            },
+            {
+                text: "Remember this day? It was honestly one of my favorite memories.",
+                image: "p6.jpg" 
+            },
+            {
+                text: "And I realized something...",
+                image: "p10.jpeg" 
+            },
+            {
+                text: "You make me happier than anyone else ever has.",
+                image: "p11.jpeg" 
+            },
+            {
+                text: "I love the way you laugh, the way you smile, and the way you make everything better just by being there.",
+                image: "p7.jpeg" 
+            },
+            {
+                text: "Every moment with you is a treasure I hold dear.",
+                image: "p4.jpeg" 
+            },            
+            {
+                text: "So, I have a very important question to ask you...",
+                image: "p3.jpeg" 
+            },
+            {
+                text: "Will you be my Valentine? ❤️",
+                image: "p2.jpeg", 
+                isProposal: true
+            }
+        ];
+
+        // ==========================================
+        //  GAME LOGIC
+        // ==========================================
+        let currentStep = 0;
+        let yesScale = 1;
+        let selectedDatePlan = "Expensive Dinner (Bring wallet 💅)"; 
+
+        const textElement = document.getElementById('story-text');
+        const imageContainer = document.getElementById('imageContainer');
+        const storyImage = document.getElementById('storyImage');
+        const nextBtn = document.getElementById('nextBtn');
+        const proposalBtns = document.getElementById('proposalBtns');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const progressBar = document.getElementById('progressBar');
+        const startOverlay = document.getElementById('start-overlay');
+        const waBtn = document.getElementById('waBtn');
+        const dateOptions = document.getElementById('dateOptions');
+        const termsContainer = document.getElementById('termsContainer');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+        const openLetterBtn = document.getElementById('openLetterBtn');
+        const letterModal = document.getElementById('letter-modal');
+        const closeLetter = document.getElementById('closeLetter');
+
+        startOverlay.addEventListener('click', () => {
+            startOverlay.style.opacity = '0';
+            setTimeout(() => startOverlay.style.display = 'none', 500);
+            
+            // Try to play audio
+            const music = document.getElementById('bgMusic');
+            music.play().catch(e => console.log("Audio play failed (user didn't interact yet)"));
+            loadStoryStep(0);
+            createFloatingHearts();
+        });
+
+        function loadStoryStep(index) {
+            const step = story[index];
+            const progress = ((index + 1) / story.length) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            nextBtn.style.display = 'none';
+            textElement.innerHTML = "";
+            proposalBtns.style.display = 'none';
+            
+            if (step.image) {
+                storyImage.src = step.image;
+                imageContainer.style.display = 'flex'; // Use flex to center the image
+            } else {
+                imageContainer.style.display = 'none';
+            }
+
+            let charIndex = 0;
+            function typeWriter() {
+                if (charIndex < step.text.length) {
+                    textElement.innerHTML += step.text.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 50);
+                } else {
+                    if (!step.isProposal) {
+                        nextBtn.style.display = 'inline-block';
+                    } else {
+                        proposalBtns.style.display = 'flex';
+                        initProposalInteractions();
+                    }
+                }
+            }
+            typeWriter();
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentStep++;
+            if (currentStep < story.length) loadStoryStep(currentStep);
+        });
+
+        function initProposalInteractions() {
+            // "No" button dodging logic
+            noBtn.addEventListener('click', moveNoButton); 
+            noBtn.addEventListener('mouseover', moveNoButton);
+            noBtn.addEventListener('touchstart', moveNoButton); 
+
+            function moveNoButton(e) {
+                if(e) e.preventDefault(); 
+                yesScale += 0.2;
+                yesBtn.style.transform = `scale(${yesScale})`;
+                
+                const container = document.querySelector('.container');
+                const maxX = container.clientWidth - noBtn.clientWidth - 20;
+                const maxY = container.clientHeight - noBtn.clientHeight - 20;
+                
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = Math.random() * maxX + 'px';
+                noBtn.style.top = Math.random() * maxY + 'px';
+            }
+
+            yesBtn.addEventListener('click', () => {
+                proposalBtns.style.display = 'none';
+                progressBar.style.display = 'none';
+                
+                // Final Success GIF
+                storyImage.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDhoaHUxNGIweWd6YjlrZ2Y4MWoxOTh5cjRybDNwMmZkcmJkMjg4cyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/HHzBaXsra2MHciRNQr/giphy.gif"; 
+                
+                textElement.innerHTML = `
+                    <div style="font-size: 1.6rem; color: #ff4b6e; animation: pulse 1s infinite; font-weight:bold;">YAYYYYY! I LOVE YOU SO MUCHCHCHCH! 🎉</div>
+                    <div style="font-size: 1.1rem; margin-top:10px;">You have officially become my Valentine 💖</div>
+                `;
+                
+                dateOptions.style.display = 'flex';
+                termsContainer.style.display = 'block';
+                openLetterBtn.style.display = 'inline-block';
+                waBtn.style.display = 'inline-block';
+                
+                createMassiveConfetti();
+            });
+        }
+
+        window.selectDate = function(plan) {
+            selectedDatePlan = plan;
+            document.querySelectorAll('.date-option').forEach(el => {
+                el.classList.remove('selected');
+                if(el.innerText.includes(plan)) el.classList.add('selected');
+            });
+        }
+
+        waBtn.addEventListener('click', (e) => {
+             if(!termsCheckbox.checked) {
+                 e.preventDefault(); 
+                 termsContainer.classList.remove('pulse');
+                 void termsContainer.offsetWidth; 
+                 termsContainer.classList.add('pulse');
+                 alert("Hey! Read the fine print! You have to agree! 💅");
+             } else {
+                 const message = `YAYYYYY! I LOVE YOU SO MUCHCHCHCH! \nMy Date choice: ${selectedDatePlan}\n(And yes, I agree to the terms)`;
+                 waBtn.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+             }
+        });
+
+        openLetterBtn.addEventListener('click', () => letterModal.style.display = 'flex');
+        closeLetter.addEventListener('click', () => letterModal.style.display = 'none');
+        window.onclick = (event) => {
+            if (event.target == letterModal) letterModal.style.display = 'none';
+        }
+
+        function createFloatingHearts() {
+            const bg = document.getElementById('heartBg');
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                bg.appendChild(heart);
+                setTimeout(() => heart.remove(), 5000);
+            }, 300);
+        }
+
+        function createMassiveConfetti() {
+            const duration = 15 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
